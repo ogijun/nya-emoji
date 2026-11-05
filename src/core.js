@@ -1,6 +1,7 @@
 // DOM にも chrome.* にも触らない純粋関数。content script と options の両方から読み、node --test でも検証する。
 const NyaCore = (() => {
   const EMOJI_RE = /:([a-z0-9_+'-]+):/g;
+  const DEFAULT_PATTERNS = ['github.com'];
 
   /**
    * @param {string} host
@@ -61,7 +62,7 @@ const NyaCore = (() => {
     return base.replace(/\.[^.]+$/, '').toLowerCase();
   }
 
-  return { hostAllowed, parsePatterns, splitText, nameFromPath };
+  return { DEFAULT_PATTERNS, hostAllowed, parsePatterns, splitText, nameFromPath };
 })();
 
 if (typeof module !== 'undefined') module.exports = NyaCore;

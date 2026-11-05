@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "kkhs nya emoji",
+  "version": "0.1.0",
+  "description": "ページ内の :bow-nya: などをネコチャン絵文字の画像で表示する（表示だけ・自分の画面のみ）",
+  "permissions": ["storage", "unlimitedStorage"],
+  "options_ui": { "page": "src/options.html", "open_in_tab": true },
+  "action": { "default_title": "kkhs nya emoji の設定" },
+  "background": { "service_worker": "src/background.js" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/core.js", "src/content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
