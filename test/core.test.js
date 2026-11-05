@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { hostAllowed, splitText, nameFromPath, parsePatterns, preferOrder } = require('../src/core.js');
+const { hostAllowed, splitText, nameFromPath, parsePatterns, preferOrder } = require('../extension/src/core.js');
 
 test('hostAllowed: 完全一致', () => {
   assert.equal(hostAllowed('github.com', ['github.com']), true);

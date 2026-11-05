@@ -9,7 +9,7 @@ GitHub などのページに書かれた `:bow-nya:` を、ネコチャン絵文
 ## 入れ方
 
 1. [しかまつさんの note](https://note.com/shikamatsu/n/nd217dc0617db) から zip を落として展開する
-2. `chrome://extensions` → デベロッパーモードを ON →「パッケージ化されていない拡張機能を読み込む」でこのリポのディレクトリを選ぶ
+2. `chrome://extensions` → デベロッパーモードを ON →「パッケージ化されていない拡張機能を読み込む」でこのリポの `extension/` ディレクトリを選ぶ
 3. ツールバーの拡張アイコン（または拡張の「オプション」）で設定画面を開き、展開した `all-nya` フォルダを選ぶ。見出しの `:youkoso-nya:` などがネコチャンになれば成功。プレビューのネコチャンを押すと `:名前:` をコピーできる
 4. 開いているタブを再読み込みする
 
@@ -25,13 +25,13 @@ GitHub などのページに書かれた `:bow-nya:` を、ネコチャン絵文
 ## 開発
 
 ```sh
-npm test   # src/core.js の純粋関数のテスト (node --test)
+npm test   # extension/src/core.js の純粋関数のテスト (node --test)
 ```
 
 | ファイル | 役割 |
 |---|---|
-| `src/core.js` | ホスト判定・テキスト分割など DOM に触らない関数 |
-| `src/content.js` | テキストノードを走査して置換。`document` を MutationObserver で監視（一部の SPA は `<html>` ごと差し替えるため要素ではなく document を見る） |
-| `src/options.*` | 画像フォルダの取り込み（`chrome.storage.local` に data URL で保存）とホワイトリスト |
+| `extension/src/core.js` | ホスト判定・テキスト分割など DOM に触らない関数 |
+| `extension/src/content.js` | テキストノードを走査して置換。`document` を MutationObserver で監視（一部の SPA は `<html>` ごと差し替えるため要素ではなく document を見る） |
+| `extension/src/options.*` | 画像フォルダの取り込み（`chrome.storage.local` に data URL で保存）とホワイトリスト |
 
 保存形式: `names`（名前の配列）、`img:<name>`（data URL）、`patterns`（ホワイトリスト）。content script は `names` だけを読み、ページに出てきた名前の画像だけを取り出す。
