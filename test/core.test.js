@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { hostAllowed, splitText, nameFromPath, parsePatterns } = require('../src/core.js');
+const { hostAllowed, splitText, nameFromPath, parsePatterns, preferOrder } = require('../src/core.js');
 
 test('hostAllowed: 完全一致', () => {
   assert.equal(hostAllowed('github.com', ['github.com']), true);
@@ -46,4 +46,32 @@ test('splitText: 時刻の中のコロンに引きずられない', () => {
 test('nameFromPath: フォルダと拡張子を落とし小文字に', () => {
   assert.equal(nameFromPath('all-nya/sub/Bow-Nya.PNG'), 'bow-nya');
   assert.equal(nameFromPath('ok_nya.gif'), 'ok_nya');
+});
+
+test('nameFromPath: 前後の空白を落とす', () => {
+  assert.equal(nameFromPath('all-nya/benkyou-nya .png'), 'benkyou-nya');
+});
+
+test('nameFromPath: macOS のファイル名 (NFD) を NFC にそろえる', () => {
+  assert.equal(nameFromPath('バッハ-nya.png'.normalize('NFD')), 'バッハ-nya');
+  assert.equal(nameFromPath('ヴィーnyaス誕生.gif'.normalize('NFD')), 'ヴィーnyaス誕生');
+});
+
+test('splitText: 日本語の名前', () => {
+  const names = new Set(['バッハ-nya', '牛乳を注ぐおんnya']);
+  assert.deepEqual(splitText('今日は:バッハ-nya:と:牛乳を注ぐおんnya:', names), [
+    '今日は',
+    { name: 'バッハ-nya' },
+    'と',
+    { name: '牛乳を注ぐおんnya' },
+  ]);
+});
+
+test('splitText: 全角コロンは区切りにしない', () => {
+  assert.equal(splitText('注意：バッハ-nya：', new Set(['バッハ-nya'])), null);
+});
+
+test('preferOrder: 同名なら gif を後ろに並べる (後勝ちで gif が残る)', () => {
+  const files = ['medetai-nya.gif', 'medetai-nya.png', 'a.png'];
+  assert.deepEqual([...files].sort(preferOrder), ['medetai-nya.png', 'a.png', 'medetai-nya.gif']);
 });

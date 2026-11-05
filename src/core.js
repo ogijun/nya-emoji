@@ -1,6 +1,7 @@
 // DOM にも chrome.* にも触らない純粋関数。content script と options の両方から読み、node --test でも検証する。
 const NyaCore = (() => {
-  const EMOJI_RE = /:([a-z0-9_+'-]+):/g;
+  // 日本語名（:バッハ-nya: など）も通す。区切りは半角コロンだけ
+  const EMOJI_RE = /:([\p{L}\p{N}\p{M}_+'-]+):/gu;
   const DEFAULT_PATTERNS = ['github.com'];
 
   /**
@@ -37,7 +38,7 @@ const NyaCore = (() => {
   function splitText(text, names) {
     const parts = [];
     let cursor = 0;
-    const re = new RegExp(EMOJI_RE.source, 'g');
+    const re = new RegExp(EMOJI_RE.source, 'gu');
     let m;
     while ((m = re.exec(text)) !== null) {
       if (!names.has(m[1])) {
@@ -59,10 +60,20 @@ const NyaCore = (() => {
    */
   function nameFromPath(path) {
     const base = path.split('/').pop() ?? '';
-    return base.replace(/\.[^.]+$/, '').toLowerCase();
+    // macOS のファイル名は NFD（濁点が分かれている）なので、ページの文字 (NFC) にそろえる
+    return base.replace(/\.[^.]+$/, '').trim().normalize('NFC').toLowerCase();
   }
 
-  return { DEFAULT_PATTERNS, hostAllowed, parsePatterns, splitText, nameFromPath };
+  /**
+   * 同名の png と gif があるとき gif を後ろに並べる比較関数。取り込みは後勝ちなので gif（動く方）が残る。
+   * @param {string} a @param {string} b @returns {number}
+   */
+  function preferOrder(a, b) {
+    const isGif = (p) => (/\.gif$/i.test(p) ? 1 : 0);
+    return isGif(a) - isGif(b);
+  }
+
+  return { DEFAULT_PATTERNS, hostAllowed, parsePatterns, splitText, nameFromPath, preferOrder };
 })();
 
 if (typeof module !== 'undefined') module.exports = NyaCore;

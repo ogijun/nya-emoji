@@ -1,4 +1,4 @@
-const { DEFAULT_PATTERNS, parsePatterns, nameFromPath } = NyaCore;
+const { DEFAULT_PATTERNS, parsePatterns, nameFromPath, preferOrder } = NyaCore;
 const $ = (id) => document.getElementById(id);
 
 /** @param {File} file @returns {Promise<string>} */
@@ -21,13 +21,13 @@ async function showStatus() {
 }
 
 $('folder').addEventListener('change', async (e) => {
-  const files = [...e.target.files].filter((f) => f.type.startsWith('image/'));
+  const files = [...e.target.files].filter((f) => f.type.startsWith('image/')).sort((a, b) => preferOrder(a.name, b.name));
   if (files.length === 0) {
     $('status').textContent = '画像ファイルが見つかりませんでした';
     return;
   }
   $('status').textContent = `${files.length} 個を読み込み中…`;
-  // 同名が複数あれば後勝ち（zip の新しい版で差し替えられた子を想定）
+  // 同名が複数あれば後勝ち（preferOrder で gif を後ろにしてある）
   const entries = Object.fromEntries(
     await Promise.all(files.map(async (f) => [`img:${nameFromPath(f.webkitRelativePath || f.name)}`, await toDataUrl(f)])),
   );
