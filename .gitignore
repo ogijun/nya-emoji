@@ -5,3 +5,8 @@ all-nya/
 *.gif
 *.jpg
 !icons/*.png
+
+# Safari (Xcode)
+safari/build/
+xcuserdata/
+.DS_Store

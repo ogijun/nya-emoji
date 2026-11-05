@@ -15,6 +15,21 @@ GitHub などのページに書かれた `:bow-nya:` を、ネコチャン絵文
 
 絵文字名はファイル名（拡張子なし・小文字・前後の空白を除く。日本語名もそのまま使える）。同名の png と gif があれば動く gif を使う。`bow-nya.png` → `:bow-nya:`。zip が更新されたら同じ手順でフォルダを選び直す（前回分は入れ替わる）。
 
+## Safari で使う
+
+`safari/` に Xcode プロジェクトがある（`extension/` を参照しているので、拡張のコードは Chrome 版と共通）。macOS 14 以降。
+
+```sh
+xcodebuild -project "safari/nya emoji/nya emoji.xcodeproj" -scheme "nya emoji" -configuration Debug \
+  -derivedDataPath safari/build CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= build
+open "safari/build/Build/Products/Debug/nya emoji.app"
+```
+
+1. Safari の設定 →「詳細」→「Web デベロッパ用の機能を表示」を ON
+2. 設定 →「デベロッパ」→「署名されていない機能拡張を許可」を ON（Safari を再起動するたびに必要）
+3. 設定 →「機能拡張」で nya emoji を ON にし、Web サイトへのアクセスを許可する
+4. 設定画面（機能拡張の「設定…」かツールバーのアイコン）で `all-nya` フォルダを選ぶ
+
 ## 表示するサイト
 
 設定画面のホワイトリストで決める。既定は `github.com`。
