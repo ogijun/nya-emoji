@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { hostAllowed, splitText, nameFromPath, parsePatterns, preferOrder } = require('../extension/src/core.js');
+const { hostAllowed, splitText, nameFromPath, parsePatterns, preferOrder, tokenBeforeCaret, searchNames } = require('../extension/src/core.js');
 
 test('hostAllowed: 完全一致', () => {
   assert.equal(hostAllowed('github.com', ['github.com']), true);
@@ -74,4 +74,44 @@ test('splitText: 全角コロンは区切りにしない', () => {
 test('preferOrder: 同名なら gif を後ろに並べる (後勝ちで gif が残る)', () => {
   const files = ['medetai-nya.gif', 'medetai-nya.png', 'a.png'];
   assert.deepEqual([...files].sort(preferOrder), ['medetai-nya.png', 'a.png', 'medetai-nya.gif']);
+});
+
+test('tokenBeforeCaret: : の後に1文字以上でトークン', () => {
+  assert.deepEqual(tokenBeforeCaret('ありがとう :bo', 10), { start: 6, query: 'bo' });
+  assert.deepEqual(tokenBeforeCaret('ありがとう :b', 9), { start: 6, query: 'b' });
+  assert.equal(tokenBeforeCaret('ありがとう :', 7), null);
+});
+
+test('tokenBeforeCaret: 日本語の直後でも出す', () => {
+  assert.deepEqual(tokenBeforeCaret('今日は:バッ', 6), { start: 3, query: 'バッ' });
+});
+
+test('tokenBeforeCaret: 英数字の直後のコロン (時刻・URL) では出さない', () => {
+  assert.equal(tokenBeforeCaret('10:30', 5), null);
+  assert.equal(tokenBeforeCaret('see http:ab', 11), null);
+});
+
+test('tokenBeforeCaret: 閉じたトークンや空白を含むものは対象外', () => {
+  assert.equal(tokenBeforeCaret(':bow-nya: ', 10), null);
+  assert.equal(tokenBeforeCaret(':bow-nya:', 9), null);
+  assert.equal(tokenBeforeCaret(':bo w', 5), null);
+});
+
+test('tokenBeforeCaret: キャレットより後ろは見ない', () => {
+  assert.deepEqual(tokenBeforeCaret(':bow-nya', 3), { start: 0, query: 'bo' });
+});
+
+test('searchNames: 先頭一致を先に、次に語の先頭一致。短い順', () => {
+  const names = ['kuro-bow-nya', 'bow-nya2', 'bow-nya', 'rainbow-nya', 'boring'];
+  assert.deepEqual(searchNames(names, 'bow'), ['bow-nya', 'bow-nya2', 'kuro-bow-nya']);
+});
+
+test('searchNames: 大文字・NFD を吸収し、件数を絞る', () => {
+  assert.deepEqual(searchNames(['バッハ-nya'], 'バッ'.normalize('NFD')), ['バッハ-nya']);
+  assert.deepEqual(searchNames(['ok-nya'], 'OK'), ['ok-nya']);
+  assert.equal(searchNames(Array.from({ length: 20 }, (_, i) => `a${i}`), 'a', 8).length, 8);
+});
+
+test('searchNames: 見つからなければ空', () => {
+  assert.deepEqual(searchNames(['bow-nya'], 'smile'), []);
 });

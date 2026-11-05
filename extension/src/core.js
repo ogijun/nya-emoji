@@ -73,7 +73,37 @@ const NyaCore = (() => {
     return isGif(a) - isGif(b);
   }
 
-  return { DEFAULT_PATTERNS, hostAllowed, parsePatterns, splitText, nameFromPath, preferOrder };
+  /**
+   * キャレット直前の書きかけトークン（":bo" の部分）。: の後に1文字以上、かつ : の直前が英数字でないとき。
+   * 1文字から取るのは、サイト自前の絵文字候補（GitHub など）が1文字目で開くより先に受け持つため。
+   * @param {string} text
+   * @param {number} caret
+   * @returns {{start: number, query: string} | null} start は : の位置
+   */
+  function tokenBeforeCaret(text, caret) {
+    const m = /(^|[^A-Za-z0-9:]):([\p{L}\p{N}\p{M}_+'-]+)$/u.exec(text.slice(0, caret));
+    return m ? { start: m.index + m[1].length, query: m[2] } : null;
+  }
+
+  /**
+   * 名前の先頭一致 → '-' '_' で区切った語の先頭一致の順。同じ順位の中では短い名前から。
+   * @param {string[]} names
+   * @param {string} query
+   * @param {number} [limit]
+   * @returns {string[]}
+   */
+  function searchNames(names, query, limit = 8) {
+    const q = query.normalize('NFC').toLowerCase();
+    const rank = (n) => (n.startsWith(q) ? 0 : n.split(/[-_]/).some((w) => w.startsWith(q)) ? 1 : -1);
+    return names
+      .map((n) => [rank(n), n])
+      .filter(([r]) => r >= 0)
+      .sort((a, b) => a[0] - b[0] || a[1].length - b[1].length || (a[1] < b[1] ? -1 : 1))
+      .slice(0, limit)
+      .map(([, n]) => n);
+  }
+
+  return { DEFAULT_PATTERNS, hostAllowed, parsePatterns, splitText, nameFromPath, preferOrder, tokenBeforeCaret, searchNames };
 })();
 
 if (typeof module !== 'undefined') module.exports = NyaCore;
