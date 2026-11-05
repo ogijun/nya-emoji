@@ -4,6 +4,7 @@ GitHub などのページに書かれた `:bow-nya:` を、ネコチャン絵文
 
 - **表示だけ**: ページの文字を表示時に置き換える。投稿の中身は `:bow-nya:` のまま。拡張を入れた人の画面でだけ画像になる
 - 入力欄（textarea・編集中の contenteditable）と `code` / `pre` の中は置き換えない
+- **入力中の候補**: textarea / input で `:bo` と打つと猫の候補が出る（↑↓ で選び Enter / Tab で `:bow-nya: ` を入れる）。猫が見つからないときや Esc を押したときは、サイト本来の動き（GitHub などの自前の絵文字候補）にそのまま渡す。リッチエディタ（contenteditable）は未対応
 - 手渡し用。Web Store には出さない。画像はリポに入れない（各自が取り込む）。ネコチャン絵文字は[しかまつさん](https://note.com/shikamatsu/n/nd217dc0617db)の作品
 
 ## 入れ方
@@ -48,6 +49,7 @@ npm test   # extension/src/core.js の純粋関数のテスト (node --test)
 |---|---|
 | `extension/src/core.js` | ホスト判定・テキスト分割など DOM に触らない関数 |
 | `extension/src/content.js` | テキストノードを走査して置換。`document` を MutationObserver で監視（一部の SPA は `<html>` ごと差し替えるため要素ではなく document を見る） |
+| `extension/src/suggest.js` | 入力中の候補。`window` の capture で input / keydown を先に受け、猫の候補があるときだけ止める（無ければサイトに渡す） |
 | `extension/src/options.*` | 画像フォルダの取り込み（`chrome.storage.local` に data URL で保存）とホワイトリスト |
 
 保存形式: `names`（名前の配列）、`img:<name>`（data URL）、`patterns`（ホワイトリスト）。content script は `names` だけを読み、ページに出てきた名前の画像だけを取り出す。

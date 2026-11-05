@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/core.js", "src/content.js"],
+      "js": ["src/core.js", "src/content.js", "src/suggest.js"],
       "run_at": "document_idle"
     }
   ]
