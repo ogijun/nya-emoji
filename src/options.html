@@ -2,36 +2,45 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>kkhs nya emoji の設定</title>
+  <title>nya emoji の設定</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2em auto; line-height: 1.6; }
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2em auto; line-height: 1.7; }
     section { margin-bottom: 2em; }
     textarea { width: 100%; height: 8em; font-family: ui-monospace, monospace; }
-    #preview img { height: 32px; margin: 2px; }
+    .nya { height: 1.4em; width: auto; vertical-align: -0.35em; }
+    h1 .nya { height: 1.6em; }
+    #preview { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 0.5em; }
+    #preview img { height: 32px; cursor: pointer; }
+    #preview img:hover { transform: scale(1.6); transition: transform 0.1s; }
     .muted { color: #666; font-size: 0.9em; }
+    footer { margin-top: 3em; text-align: center; }
   </style>
 </head>
 <body>
-  <h1>kkhs nya emoji</h1>
+  <h1>:youkoso-nya: nya emoji :neko-nya:</h1>
+  <p class="muted">ここにある <code>:xxx-nya:</code> がネコチャンになっていたら、取り込みは成功しています :ok-nya:</p>
 
   <section>
-    <h2>1. 絵文字を取り込む</h2>
+    <h2>:mail-nya: 1. 絵文字を取り込む</h2>
     <p>
       <a href="https://note.com/shikamatsu/n/nd217dc0617db" target="_blank" rel="noopener">しかまつさんの note</a>
-      から zip を落として展開し、<code>all-nya</code> フォルダを選んでください。
+      から zip を落として展開し、<code>all-nya</code> フォルダを選んでください :dozo-nya:
       ファイル名（拡張子なし）がそのまま絵文字名になります（<code>bow-nya.png</code> → <code>:bow-nya:</code>）。
     </p>
     <input type="file" id="folder" webkitdirectory multiple>
     <p id="status" class="muted"></p>
     <div id="preview"></div>
+    <p class="muted">ネコチャンを押すと <code>:名前:</code> をコピーします :memo-nya:</p>
   </section>
 
   <section>
-    <h2>2. 表示するサイト</h2>
+    <h2>:travel-nya: 2. 表示するサイト</h2>
     <p class="muted">1行に1つ。<code>github.com</code> は完全一致、<code>*.esa.io</code> はサブドメインに一致。<code>#</code> で始まる行は無視。保存後、開いているタブは再読み込みしてください。</p>
     <textarea id="patterns"></textarea>
     <button id="save">保存</button> <span id="saved" class="muted"></span>
   </section>
+
+  <footer class="muted">:thanks-nya: ネコチャン絵文字は しかまつさん の作品です :bow-nya:</footer>
 
   <script src="core.js"></script>
   <script src="options.js"></script>
