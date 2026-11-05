@@ -53,7 +53,7 @@
       const img = document.createElement('img');
       img.src = url;
       img.alt = img.title = `:${p.name}:`;
-      img.className = 'kkhs-nya-emoji';
+      img.className = 'nya-emoji';
       img.style.cssText = 'height:1.4em;width:auto;vertical-align:-0.35em;display:inline;margin:0 0.05em;';
       frag.append(img);
     }

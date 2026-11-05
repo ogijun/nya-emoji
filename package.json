@@ -1,5 +1,5 @@
 {
-  "name": "kkhs-nya-emoji",
+  "name": "nya-emoji",
   "private": true,
   "scripts": { "test": "node --test" }
 }
