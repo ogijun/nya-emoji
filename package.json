@@ -1,5 +1,9 @@
 {
   "name": "nya-emoji",
   "private": true,
-  "scripts": { "test": "node --test" }
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "description": "ページ内の :bow-nya: をネコチャン絵文字で表示する Chrome / Safari 拡張"
 }
