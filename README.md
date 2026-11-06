@@ -1,55 +1,106 @@
 # nya-emoji
 
-GitHub などのページに書かれた `:bow-nya:` を、ネコチャン絵文字の画像で表示する Chrome 拡張。
+Slack のカスタム絵文字としておなじみの[ネコチャン絵文字](https://note.com/shikamatsu/n/nd217dc0617db)を、Slack 以外のサイトでも使えるようにする Chrome / Safari 拡張です。
 
-- **表示だけ**: ページの文字を表示時に置き換える。投稿の中身は `:bow-nya:` のまま。拡張を入れた人の画面でだけ画像になる
-- 入力欄（textarea・編集中の contenteditable）と `code` / `pre` の中は置き換えない
-- **入力中の候補**: textarea / input で `:bo` と打つと猫の候補が出る（↑↓ で選び Enter / Tab で `:bow-nya: ` を入れる）。猫が見つからないときや Esc を押したときは、サイト本来の動き（GitHub などの自前の絵文字候補）にそのまま渡す。リッチエディタ（contenteditable）は未対応
-- 手渡し用。Web Store には出さない。画像はリポに入れない（各自が取り込む）。ネコチャン絵文字は[しかまつさん](https://note.com/shikamatsu/n/nd217dc0617db)の作品
+- **表示**: ページに書かれた `:bow-nya:` を、ネコチャンの画像に置き換えて表示します
+- **入力**: 入力欄で `:bo` と打つと猫の候補が出て、選ぶと `:bow-nya:` が入ります
+
+> [!IMPORTANT]
+> **ネコチャン絵文字の画像はこのリポジトリに含まれていません。** 各自が作者の配布ページから入手して、拡張に取り込みます。
+> 画像の権利は作者の[しかまつさん](https://x.com/shi_ka_ma_tsu)にあります。使う前に[ネコチャン絵文字の利用に関するおやくそく](https://note.com/shikamatsu/n/n8818bb5ebea1)を読んでください。
+
+## できること
+
+### ページの `:name:` を画像で表示する
+
+- 置き換えるのは表示だけで、投稿の中身は `:bow-nya:` という文字のままです。**画像に見えるのは拡張を入れている人だけ**で、他の人には文字のまま見えます
+- 後から読み込まれる部分（SPA の画面遷移、コメントの追加など）も追いかけて置き換えます
+- 入力欄（textarea、編集中の contenteditable）と `code` / `pre` の中は置き換えません
+- 動くのは設定画面で許可したサイトだけです（既定は `github.com`）
+
+### 入力中に猫の候補を出す
+
+textarea / input で `:` に続けて打つと、名前が合う猫の候補が出ます。
+
+| キー | 動き |
+|---|---|
+| ↑ ↓（Ctrl+P / Ctrl+N） | 候補を選ぶ |
+| Enter / Tab | `:bow-nya: ` を入れる |
+| Esc | 猫の候補を閉じて、サイト本来の絵文字候補に切り替える |
+
+GitHub などのサイトも `:` で自前の絵文字候補を出します。そこで、**猫が見つかったときだけ拡張が入力を受け持ち、見つからないとき（`:smile` など）はサイト本来の動きにそのまま渡します**。`10:30` のような英数字の直後のコロンでは候補を出しません。
+
+リッチエディタ（contenteditable）での候補表示には対応していません。
 
 ## 入れ方
 
-1. [しかまつさんの note](https://note.com/shikamatsu/n/nd217dc0617db) から zip を落として展開する
-2. `chrome://extensions` → デベロッパーモードを ON →「パッケージ化されていない拡張機能を読み込む」でこのリポの `extension/` ディレクトリを選ぶ
-3. ツールバーの拡張アイコン（または拡張の「オプション」）で設定画面を開き、展開した `all-nya` フォルダを選ぶ。見出しの `:youkoso-nya:` などがネコチャンになれば成功。プレビューのネコチャンを押すと `:名前:` をコピーできる
-4. 開いているタブを再読み込みする
+### 1. ネコチャン絵文字を入手する
 
-絵文字名はファイル名（拡張子なし・小文字・前後の空白を除く。日本語名もそのまま使える）。同名の png と gif があれば動く gif を使う。`bow-nya.png` → `:bow-nya:`。zip が更新されたら同じ手順でフォルダを選び直す（前回分は入れ替わる）。
+[しかまつさんの note](https://note.com/shikamatsu/n/nd217dc0617db) から zip を落として展開します。中の `all-nya` フォルダが全部入りです。
 
-## Safari で使う
+### 2a. Chrome に入れる
 
-`safari/` に Xcode プロジェクトがある（`extension/` を参照しているので、拡張のコードは Chrome 版と共通）。macOS 14 以降。
+1. `chrome://extensions` を開き、右上の「デベロッパーモード」を ON にする
+2. 「パッケージ化されていない拡張機能を読み込む」で、このリポジトリの **`extension/`** ディレクトリを選ぶ（リポジトリ直下ではありません）
+
+### 2b. Safari に入れる（macOS 14 以降・Xcode が必要）
 
 ```sh
 xcodebuild -project "safari/nya emoji/nya emoji.xcodeproj" -scheme "nya emoji" -configuration Debug \
   -derivedDataPath safari/build CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= build
-open "safari/build/Build/Products/Debug/nya emoji.app"
 ```
 
-1. Safari の設定 →「詳細」→「Web デベロッパ用の機能を表示」を ON
-2. 設定 →「デベロッパ」→「署名されていない機能拡張を許可」を ON（Safari を再起動するたびに必要）
-3. **2 の後で** `nya emoji.app` を起動し直す（先に起動していても、許可を ON にした後で起動しないと「機能拡張」に出ない）
+1. Safari の設定 →「詳細」→「Web デベロッパ用の機能を表示」を ON にする
+2. 設定 →「デベロッパ」→「署名されていない機能拡張を許可」を ON にする（Safari を終了するたびに OFF に戻ります）
+3. **2 の後で** app を起動する: `open "safari/build/Build/Products/Debug/nya emoji.app"`（先に起動していても、許可を ON にした後で起動し直さないと一覧に出ません）
 4. 設定 →「機能拡張」で nya emoji を ON にし、Web サイトへのアクセスを許可する
-5. 設定画面（機能拡張の「設定…」かツールバーのアイコン）で `all-nya` フォルダを選ぶ
 
-## 表示するサイト
+コードを更新したら、ビルドし直して app を起動し直し、「機能拡張」でチェックを一度外して付け直します。
 
-設定画面のホワイトリストで決める。既定は `github.com`。
+### 3. 絵文字を取り込む
 
-- `github.com` は完全一致（`gist.github.com` は含まない）
-- `*.esa.io` はサブドメインに一致
+拡張のアイコン（または拡張の「オプション」「設定…」）から設定画面を開き、展開した `all-nya` フォルダを選びます。設定画面の見出しにある `:youkoso-nya:` などがネコチャンになれば成功です。そのあと、開いているタブを再読み込みします。
+
+- 絵文字名はファイル名です（`bow-nya.png` → `:bow-nya:`）。拡張子を除き、小文字にし、前後の空白を落とします。日本語名（`:バッハ-nya:` など）もそのまま使えます
+- 同じ名前の png と gif があるときは、動く gif を使います
+- 絵文字が更新されたら、同じ手順でフォルダを選び直してください。前回の分はまとめて入れ替わります
+- プレビューのネコチャンを押すと `:名前:` をコピーできます
+
+## 設定: 動かすサイト
+
+設定画面に、拡張を動かすサイトを 1 行に 1 つずつ書きます。既定は `github.com` だけです。
+
+| 書き方 | 一致するもの |
+|---|---|
+| `github.com` | `github.com` だけ（`gist.github.com` は含まない） |
+| `*.esa.io` | `foo.esa.io` などのサブドメイン（`esa.io` 自体は含まない） |
+| `# メモ` | `#` で始まる行は無視 |
+
+保存したら、開いているタブを再読み込みしてください。
+
+## 仕組み
+
+| ファイル | 役割 |
+|---|---|
+| `extension/src/core.js` | ホスト判定、テキストの分割、候補の検索など、DOM に触らない関数 |
+| `extension/src/content.js` | テキストノードを走査して置き換える。`document` を MutationObserver で監視する（`<html>` 要素ごと差し替えるサイトがあるため、要素ではなく document を見る） |
+| `extension/src/suggest.js` | 入力中の候補。`window` の capture 段階で input / keydown をサイトより先に受け、猫の候補があるときだけイベントを止める |
+| `extension/src/options.*` | 画像フォルダの取り込みと、動かすサイトの設定 |
+| `safari/` | Safari 版の Xcode プロジェクト（`safari-web-extension-converter` で生成）。`extension/` を参照するので、コードは Chrome 版と共通 |
+
+- 画像は `chrome.storage.local` に data URL で保存します（`img:<name>`）。名前の一覧（`names`）と、動かすサイト（`patterns`）も同じ場所に置きます
+- content script は名前の一覧だけを読み、ページに出てきた名前の画像だけを取り出します
+- 外部への通信はしません。画像は手元に取り込んだものだけを使います
 
 ## 開発
 
 ```sh
-npm test   # extension/src/core.js の純粋関数のテスト (node --test)
+npm test   # core.js の単体テスト（node --test、依存パッケージなし）
 ```
 
-| ファイル | 役割 |
-|---|---|
-| `extension/src/core.js` | ホスト判定・テキスト分割など DOM に触らない関数 |
-| `extension/src/content.js` | テキストノードを走査して置換。`document` を MutationObserver で監視（一部の SPA は `<html>` ごと差し替えるため要素ではなく document を見る） |
-| `extension/src/suggest.js` | 入力中の候補。`window` の capture で input / keydown を先に受け、猫の候補があるときだけ止める（無ければサイトに渡す） |
-| `extension/src/options.*` | 画像フォルダの取り込み（`chrome.storage.local` に data URL で保存）とホワイトリスト |
+画像ファイル（`*.png` / `*.gif` / `*.zip`）は `.gitignore` で除外しています。ネコチャン絵文字の画像やスクリーンショットはコミットしないでください。
 
-保存形式: `names`（名前の配列）、`img:<name>`（data URL）、`patterns`（ホワイトリスト）。content script は `names` だけを読み、ページに出てきた名前の画像だけを取り出す。
+## ライセンス
+
+- **コード**: [MIT License](LICENSE)
+- **ネコチャン絵文字**: この MIT License の対象外です。権利は作者のしかまつさんにあり、[利用に関するおやくそく](https://note.com/shikamatsu/n/n8818bb5ebea1)に従います。最新の配布場所は [note](https://note.com/shikamatsu/n/nd217dc0617db) です
